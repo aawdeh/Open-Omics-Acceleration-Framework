@@ -1,0 +1,19 @@
+## Inputs for multifq STAR
+R1PREFIX="fastq_R1"    ## prefix for R1 as input to bwamem2 in multifq
+R2PREFIX="fastq_R2"    ## prefix for R2 as input to bwamem2 in multifq
+
+## followin are inputs to fqprocess
+R1="10k_PBMC_Multiome_nextgem_Chromium_Controller_atac_S1_L001_R1_001.fastq.gz 10k_PBMC_Multiome_nextgem_Chromium_Controller_atac_S1_L002_R1_001.fastq.gz"
+R2="10k_PBMC_Multiome_nextgem_Chromium_Controller_atac_S1_L001_R2_001.fastq.gz 10k_PBMC_Multiome_nextgem_Chromium_Controller_atac_S1_L002_R2_001.fastq.gz"
+I1=""
+
+# default values
+ISTART="False"   ## flag for STAR index creation False/True
+WHITELIST="whitelist.txt"
+READ_STRUCTURE="16C"
+BARCODE_ORIENTATION="FIRST_BP_RC"
+BAM_SIZE="5"   # in GB by default
+SAMPLE_ID=""
+OUTPUT_FORMAT="FASTQ"
+OUTFILE="broadfinal"    ##name of the output bam file
+PARAMS=""     ## STAR paramas barring -t <threads> option
