@@ -34,8 +34,8 @@ EXEDIR=`pwd`
 # compile starsolo
 echo "Build STAR" 
 cd ${WDIR}/applications/STAR
-cd STAR/bin/Linux_x86_64_static
-chmod +x ./STAR
+cd bin/Linux_x86_64_static
+chmod +x STAR
 
 # compile htslib
 cd ${WDIR}/applications/htslib
