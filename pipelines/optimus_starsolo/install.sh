@@ -33,9 +33,11 @@ EXEDIR=`pwd`
 
 # compile starsolo
 echo "Build STAR" 
-cd ${WDIR}/applications/STAR
-cd bin/Linux_x86_64_static
-chmod +x STAR
+cd ${WDIR}/applications
+wget https://github.com/alexdobin/STAR/archive/refs/tags/2.7.11a.tar.gz
+tar -xfz 2.7.11a.tar.gz
+cd STAR-${STAR_VERSION}/bin/Linux_x86_64_static
+chmod +x ./STAR
 
 # compile htslib
 cd ${WDIR}/applications/htslib
