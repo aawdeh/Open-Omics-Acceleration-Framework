@@ -39,7 +39,8 @@ pwd
 ls
 tar -xvf 2.7.11a.tar.gz
 rm 2.7.11a.tar.gz
-cd STAR-2.7.11a/bin/Linux_x86_64_static
+mv STAR-2.7.11a/ STAR
+cd STAR/bin/Linux_x86_64_static
 chmod +x ./STAR
 
 # compile htslib
