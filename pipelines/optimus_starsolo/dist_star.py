@@ -364,16 +364,24 @@ def sam_writer( comm, fname ):
 
 def main(argv):
     parser=ArgumentParser()
+
+     # --soloType Droplet \
+        # --soloStrand ~{star_strand_mode} \
+        # --runThreadN ~{cpu} \
+        # --genomeDir genome_reference \
+        # --readFilesIn "~{sep=',' r2_fastq}" "~{sep=',' r1_fastq}" \
+        # --readFilesCommand "gunzip -c" \
+        # --soloCBwhitelist ~{white_list} \
+   
     parser.add_argument('--input',help="Input data directory")
     parser.add_argument('--temp',default="",help="Intermediate data directory")
-    parser.add_argument('--refdir',default="",help="Reference genome directory")
+    parser.add_argument('--reference_genome',default="",help="Reference genome")
     parser.add_argument('--read1',default="", nargs='+',help="name of r1 files (for fqprocess) seperated by spaces")
     parser.add_argument('--read2',default="", nargs='+',help="name of r2 files (for fqprocess) seperated by spaces")
     parser.add_argument('--readi1',default="", nargs='+',help="name of i1 files (for fqprocess) seperated by spaces")
     parser.add_argument('--r1prefix',default="", help="processed R1 files for STAR")
     parser.add_argument('--r2prefix',default="", help="processed R2 files for STAR")
     parser.add_argument('--whitelist',default="whitelist.txt",help="10x whitelist file")
-    parser.add_argument('--read_structure',default="16C",help="read structure")
     parser.add_argument('--sample_id',default="",help="sample id")
     parser.add_argument('--output_format',default="",help="output_format")
     parser.add_argument('--output',help="Output data directory")
@@ -408,8 +416,9 @@ def main(argv):
     output=args["output"] + "/"
     tempdir=args["temp"]
     if tempdir=="": tempdir=output
-    refdir=args["refdir"]
-    if refdir=="": refdir=folder
+
+    reference_genome=args["reference_genome"]
+   
     prof=args["profile"]
     global keep
     keep=args["keep_unmapped"]
@@ -465,10 +474,28 @@ def main(argv):
         #assert os.path.isfile(fn2) == True
         fn3, thr = sam_writer( comm, output+'/aln' )
         begin1 = time.time()
- 
+
         if os.path.isfile(fn1) == True:
             a=run(f'{BINDIR}/applications/STAR/bin/Linux_x86_64_static/STAR ' + 
-                  params + ' -t '+cpus+' '+refdir+ifile+' '+fn1+' '+fn2+' > '+fn3 + '  2> ' 
+                  + '--soloType Droplet Droplet' +
+                  + ' --soloStrand Forward' +  
+                  + ' --runThreadN '+ cpus 
+                  + ' --genomeDir '+ reference_genome 
+                  + ' --readFilesIn ' + fn2 +' ' + fn1
+                  + ' --readFilesCommand "gunzip -c"'  
+                  + ' --soloCBwhitelist ' + whitelist 
+                  + ' --soloUMIlen 12'  
+                  + ' --soloCBlen 16' 
+                  + ' --soloFeatures GeneFull_Ex50pAS'
+                  + ' --clipAdapterType CellRanger4'
+                  + ' --outFilterScoreMin 30'
+                  + ' --soloCBmatchWLtype 1MM_multi_Nbase_pseudocounts'
+                  + ' --soloUMIdedup 1MM_Directional_UMItools'
+                  + ' --outSAMtype BAM SortedByCoordinate'
+                  + ' --outSAMattributes UB UR UY CR CB CY NH GX GN sF'
+                  + ' --soloBarcodeReadLength 0'
+                  + ' --soloCellReadStats Standard'
+                  + '  2> ' 
                   + output +'/starlog' + str(rank) + '.txt',capture_output=True, shell=True)
             assert a.returncode == 0
         else:
