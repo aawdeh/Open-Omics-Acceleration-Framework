@@ -469,7 +469,7 @@ def main(argv):
         if os.path.isfile(fn1) == True:
             a=run(f'{BINDIR}/applications/STAR/STAR/bin/Linux_x86_64_static ' + 
                   params + ' -t '+cpus+' '+refdir+ifile+' '+fn1+' '+fn2+' > '+fn3 + '  2> ' 
-                  + output +'/bwalog' + str(rank) + '.txt',capture_output=True, shell=True)
+                  + output +'/starlog' + str(rank) + '.txt',capture_output=True, shell=True)
             assert a.returncode == 0
         else:
             print(f"{rank} No input file for me")
