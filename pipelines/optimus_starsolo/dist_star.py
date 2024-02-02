@@ -467,7 +467,7 @@ def main(argv):
         begin1 = time.time()
  
         if os.path.isfile(fn1) == True:
-            a=run(f'{BINDIR}/applications/STAR/STAR/bin/Linux_x86_64_static ' + 
+            a=run(f'{BINDIR}/applications/STAR/bin/Linux_x86_64_static/STAR ' + 
                   params + ' -t '+cpus+' '+refdir+ifile+' '+fn1+' '+fn2+' > '+fn3 + '  2> ' 
                   + output +'/starlog' + str(rank) + '.txt',capture_output=True, shell=True)
             assert a.returncode == 0
