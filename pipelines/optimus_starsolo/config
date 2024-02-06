@@ -1,19 +1,33 @@
-## Inputs for multifq STAR
-R1PREFIX="fastq_R1"    ## prefix for R1 as input to bwamem2 in multifq
-R2PREFIX="fastq_R2"    ## prefix for R2 as input to bwamem2 in multifq
+INPUT_DIR=/mnt/disks/disk-bwa-aa/starsolo
+OUTPUT_DIR=/mnt/disks/disk-bwa-aa/starsolo/output
 
-## followin are inputs to fqprocess
-R1="10k_PBMC_Multiome_nextgem_Chromium_Controller_atac_S1_L001_R1_001.fastq.gz 10k_PBMC_Multiome_nextgem_Chromium_Controller_atac_S1_L002_R1_001.fastq.gz"
-R2="10k_PBMC_Multiome_nextgem_Chromium_Controller_atac_S1_L001_R2_001.fastq.gz 10k_PBMC_Multiome_nextgem_Chromium_Controller_atac_S1_L002_R2_001.fastq.gz"
-I1=""
+## REFERENCE and WHITELIST
+REF="genome_reference"
+WHITELIST="3M-febrary-2018.txt"
 
-# default values
-ISTART="False"   ## flag for STAR index creation False/True
-WHITELIST="whitelist.txt"
-READ_STRUCTURE="16C"
-BARCODE_ORIENTATION="FIRST_BP_RC"
-BAM_SIZE="5"   # in GB by default
-SAMPLE_ID=""
-OUTPUT_FORMAT="FASTQ"
-OUTFILE="broadfinal"    ##name of the output bam file
-PARAMS=""     ## STAR paramas barring -t <threads> option
+## FILES
+# R1="10k_PBMC_Multiome_nextgem_Chromium_Controller_gex_S1_L001_R1_001.fastq.gz"
+# R2="10k_PBMC_Multiome_nextgem_Chromium_Controller_gex_S1_L001_R2_001.fastq.gz"
+R1="gex_0.R1.fastq.gz"
+R2="gex_0.R2.fastq.gz"
+
+## Inputs for multifq STAR gex_0.R1.fastq.gz
+R1PREFIX="gex"    ## prefix for R1 
+R2PREFIX="gex"    ## prefix for R2
+
+## STAR Parameters
+star_strand_mode=Forward
+soloUMIlen=12
+soloCBlen=16
+soloFeatures=GeneFull_Ex50pAS
+soloMultiMappers=Unique
+
+## Default values
+clipAdapterType="CellRanger4"
+outFilterScoreMin=30
+soloCBmatchWLtype="1MM_multi_Nbase_pseudocounts"
+soloUMIdedup="1MM_Directional_UMItools"
+outSAMtype="BAM SortedByCoordinate"
+outSAMattributes="UB UR UY CR CB CY NH GX GN sF"
+soloBarcodeReadLength=0
+soloCellReadStats="Standard"
