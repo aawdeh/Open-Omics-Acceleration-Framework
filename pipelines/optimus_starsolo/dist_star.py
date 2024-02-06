@@ -374,8 +374,8 @@ def main(argv):
     parser.add_argument('--reference_genome',default="",help="Reference genome")
     parser.add_argument('--sample_id',default="",help="sample id")
     parser.add_argument('--output',help="Output data directory")
-    parser.add_argument('--default', default='', help="Default parameters used in Optimus/Star.")
-    parser.add_argument('--params', default='', help="parameter string to STAR barring threads paramter")
+    parser.add_argument('--params1', default='', help="Top parameters used in Optimus/Star.")
+    parser.add_argument('--params2', default='', help="Parameter string to STAR barring threads paramter")
     parser.add_argument("-i", "--index", help="name of index file")
     parser.add_argument("-p", "--outfile", help="prefix for read files")
     parser.add_argument("-c", "--cpus",default=1,help="Number of cpus. default=1")
@@ -385,10 +385,10 @@ def main(argv):
     args = vars(parser.parse_args())
     ifile=args["index"]
     
-    params=args["params"]
-    default=args["default"]
-    print(params)
-    print(default)
+    params1=args["params1"]
+    params2=args["params2"]
+    print(params1)
+    print(params2)
 
     read1 = args["read1"]
     read2 = args["read2"]
@@ -412,7 +412,6 @@ def main(argv):
 
     sample_id=args['sample_id']
     if sample_id == "": sample_id = output
-    output_format = args["output_format"]
     r1prefix=args["r1prefix"]  ## for mutlifq2sortedbam mode reading 'fqprocess' processed fastq files
     r2prefix=args["r2prefix"]
     comm = MPI.COMM_WORLD
@@ -438,11 +437,8 @@ def main(argv):
     begin0 = time.time()
     if rank == 0:
         for r in range(nranks):
-            fn1 = os.path.join(folder, r1prefix + "_" + str(rank) + ".R1.fastq.gz")
-            fn2 = os.path.join(folder, r2prefix + "_" + str(rank) + ".R2.fastq.gz")
-    
-            #fn1 = os.path.join(folder, r1prefix + "_" + str(r) + ".fastq.gz")
-            #fn2 = os.path.join(folder, r2prefix + "_" + str(r) + ".fastq.gz")
+            fn1 = os.path.join(folder, r1prefix + "_" + str(r) + ".R1.fastq.gz")
+            fn2 = os.path.join(folder, r2prefix + "_" + str(r) + ".R2.fastq.gz")
 
             if os.path.isfile(fn1) == False or os.path.isfile(fn2) == False:
                 print(f"Error: Number of files fastq files ({r}) < number of ranks ({nranks})")
@@ -469,14 +465,14 @@ def main(argv):
     begin1 = time.time()
 
     if os.path.isfile(fn1) == True:
-        a=run(f'{BINDIR}/applications/STAR/bin/Linux_x86_64_static/STAR ' +  
-                + ' --runThreadN '+ cpus 
+        a=run(f'./{BINDIR}/applications/STAR/bin/Linux_x86_64_static/STAR '  
+                + params1 
+                + ' --runThreadN '+ cpus
                 + ' --genomeDir '+ reference_genome 
                 + ' --readFilesIn ' + fn2 +' ' + fn1
                 + ' --readFilesCommand "gunzip -c"'  
                 + ' --soloCBwhitelist ' + whitelist 
-                +  params 
-                +  default
+                + params2
                 + '  2> ' 
                 + output +'/starlog' + str(rank) + '.txt',capture_output=True, shell=True)
         assert a.returncode == 0

@@ -90,15 +90,14 @@ sample_id=""
 outfile=""
 
 ## STAR Parameters that might change
-OTHER_PARAMS="--soloStrand $star_strand_mode \
---soloUMIlen $soloUMIlen \
---soloCBlen $soloCBlen \
---soloFeatures $soloFeatures \
---soloMultiMappers $soloMultiMappers"
-echo $OTHER_PARAMS
+PARAMS1="--soloType Droplet \
+--soloStrand $star_strand_mode"
+echo $PARAMS1
 
 ## Default values
-DEFAULT_PARAMS="--soloType Droplet \
+PARAMS2="--soloUMIlen $soloUMIlen \
+--soloCBlen $soloCBlen \
+--soloFeatures $soloFeatures \
 --clipAdapterType CellRanger4 \
 --outFilterScoreMin 30 \
 --soloCBmatchWLtype 1MM_multi_Nbase_pseudocounts \
@@ -106,9 +105,11 @@ DEFAULT_PARAMS="--soloType Droplet \
 --outSAMtype BAM SortedByCoordinate \
 --outSAMattributes UB UR UY CR CB CY NH GX GN sF \
 --soloBarcodeReadLength 0 \
---soloCellReadStats Standard"
-echo $DEFAULT_PARAMS
+--soloCellReadStats Standard \
+--soloMultiMappers $soloMultiMappers"
+echo $PARAMS2
 
+       
 [[ -n $SAMPLE_ID ]] && sample_id="--sample_id $SAMPLE_ID" && echo "sample_id: $sample_id"
 [[ -n $OUTFILE ]] && outfile="--outfile $OUTFILE" && echo "outfile: $outfile"
 
@@ -124,9 +125,9 @@ exec=dist_star.py
 mpiexec -bootstrap ssh -bind-to $BINDING -map-by $BINDING --hostfile hostfile -n $N -ppn $PPN python -u \
 $exec --input $INDIR --output  $OUTDIR $TEMPDIR $REFDIR --index $REF --read1 $READ1 --read2 $READ2 \
 --cpus $CPUS --threads $THREADS --keep_unmapped \
---whitelist $WHITELIST --reference_genome $REF --default $DEFAULT_PARAMS -params $OTHER_PARAMS \
-${params} ${outfile} ${istart} ${sample_id} ${output_format} --r1prefix $R1PREFIX --r2prefix $R2PREFIX \
---mode $mode 2>&1 | tee ${OUTDIR}log.txt
+--whitelist $WHITELIST --reference_genome $REF --params1 "$PARAMS1" --params2 "$PARAMS2" \
+${outfile} ${istart} ${sample_id} ${output_format} --r1prefix $R1PREFIX --r2prefix $R2PREFIX \
+2>&1 | tee ${OUTDIR}log.txt
 
 
 
