@@ -82,7 +82,7 @@ echo "reads:"
 echo "READ1 $READ1"
 echo "READ2 $READ2"
 echo "R1PREFIX $R1PREFIX"
-echo "R3PREFIX $R3PREFIX"
+echo "R2PREFIX $R2PREFIX"
 
 WHITELIST=$WHITELIST
 REF=$REF
@@ -126,7 +126,7 @@ $exec --input $INDIR --output  $OUTDIR $TEMPDIR $REFDIR --index $REF --read1 $RE
 --cpus $CPUS --threads $THREADS --keep_unmapped \
 --whitelist $WHITELIST --reference_genome $REF --default $DEFAULT_PARAMS -params $OTHER_PARAMS\
 ${params} ${outfile} ${istart} 
-${sample_id} ${output_format} --r1prefix $R1PREFIX --r3prefix $R3PREFIX --mode $mode   
+${sample_id} ${output_format} --r1prefix $R1PREFIX --r2prefix $R2PREFIX --mode $mode   
 2>&1 | tee ${OUTDIR}log.txt
 
 
