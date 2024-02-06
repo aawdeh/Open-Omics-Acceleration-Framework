@@ -124,10 +124,9 @@ exec=dist_star.py
 mpiexec -bootstrap ssh -bind-to $BINDING -map-by $BINDING --hostfile hostfile -n $N -ppn $PPN python -u \
 $exec --input $INDIR --output  $OUTDIR $TEMPDIR $REFDIR --index $REF --read1 $READ1 --read2 $READ2 \
 --cpus $CPUS --threads $THREADS --keep_unmapped \
---whitelist $WHITELIST --reference_genome $REF --default $DEFAULT_PARAMS -params $OTHER_PARAMS\
-${params} ${outfile} ${istart} 
-${sample_id} ${output_format} --r1prefix $R1PREFIX --r2prefix $R2PREFIX --mode $mode   
-2>&1 | tee ${OUTDIR}log.txt
+--whitelist $WHITELIST --reference_genome $REF --default $DEFAULT_PARAMS -params $OTHER_PARAMS \
+${params} ${outfile} ${istart} ${sample_id} ${output_format} --r1prefix $R1PREFIX --r2prefix $R2PREFIX \
+--mode $mode 2>&1 | tee ${OUTDIR}log.txt
 
 
 
