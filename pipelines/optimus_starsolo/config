@@ -1,5 +1,5 @@
-INPUT_DIR=/mnt/disks/disk-bwa-aa/starsolo
-OUTPUT_DIR=/mnt/disks/disk-bwa-aa/starsolo/output
+INPUT_DIR=input_data
+OUTPUT_DIR=output
 
 ## REFERENCE and WHITELIST
 REF="genome_reference"
