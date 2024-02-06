@@ -1,14 +1,4 @@
 source config
-
-mode="multifq2sortedbam"
-if [ "$#" == "1" ]
-    then
-    mode=$1
-else
-    echo "<exec> <pragzip/flatmode/fqprocessonly/multifq2sortedbam>"
-    exit
-fi
-echo "mode: "$mode
 source miniconda3/bin/activate distbwa
 
 echo "localhost" > hostfile
