@@ -364,54 +364,42 @@ def sam_writer( comm, fname ):
 
 def main(argv):
     parser=ArgumentParser()
-
-     # --soloType Droplet \
-        # --soloStrand ~{star_strand_mode} \
-        # --runThreadN ~{cpu} \
-        # --genomeDir genome_reference \
-        # --readFilesIn "~{sep=',' r2_fastq}" "~{sep=',' r1_fastq}" \
-        # --readFilesCommand "gunzip -c" \
-        # --soloCBwhitelist ~{white_list} \
-   
     parser.add_argument('--input',help="Input data directory")
     parser.add_argument('--temp',default="",help="Intermediate data directory")
-    parser.add_argument('--reference_genome',default="",help="Reference genome")
     parser.add_argument('--read1',default="", nargs='+',help="name of r1 files (for fqprocess) seperated by spaces")
     parser.add_argument('--read2',default="", nargs='+',help="name of r2 files (for fqprocess) seperated by spaces")
     parser.add_argument('--readi1',default="", nargs='+',help="name of i1 files (for fqprocess) seperated by spaces")
     parser.add_argument('--r1prefix',default="", help="processed R1 files for STAR")
     parser.add_argument('--r2prefix',default="", help="processed R2 files for STAR")
     parser.add_argument('--whitelist',default="whitelist.txt",help="10x whitelist file")
+    parser.add_argument('--reference_genome',default="",help="Reference genome")
     parser.add_argument('--sample_id',default="",help="sample id")
-    parser.add_argument('--output_format',default="",help="output_format")
     parser.add_argument('--output',help="Output data directory")
-    parser.add_argument('--mode', default='multifq', help="flatmode/fqprocessonly/multifq/pragzip. flatmode is just bwa w/o sort.")
+    parser.add_argument('--default', default='', help="Default parameters used in Optimus/Star.")
     parser.add_argument('--params', default='', help="parameter string to STAR barring threads paramter")
     parser.add_argument("-i", "--index", help="name of index file")
     parser.add_argument("-p", "--outfile", help="prefix for read files")
     parser.add_argument("-c", "--cpus",default=1,help="Number of cpus. default=1")
     parser.add_argument("-t", "--threads",default=1,help="Number of threads used in samtool operations. default=1")
-    parser.add_argument('-in', '--istart',action='store_true',help="It will index reference genome for STAR. If it is already done offline then don't use this flag.")
     parser.add_argument('-pr', '--profile',action='store_true',help="Use profiling")
     parser.add_argument('--keep_unmapped',action='store_true',help="Keep Unmapped entries at the end of sam file.")
     args = vars(parser.parse_args())
     ifile=args["index"]
-    params=args["params"]
     
-   
+    params=args["params"]
+    default=args["default"]
+    print(params)
+    print(default)
+
     read1 = args["read1"]
     read2 = args["read2"]
-    readi1 = args["readi1"]
     print(read1)
     print(read2)
 
     whitelist=args["whitelist"]
-    read_structure=args["read_structure"]
     outfile=args["outfile"]
-    mode=args["mode"]
     cpus=args["cpus"]
     threads=args["threads"]    ## read prefix for R1, I1, R2 files
-    istart=args["istart"]
     folder=args["input"] + "/"
     output=args["output"] + "/"
     tempdir=args["temp"]
@@ -443,75 +431,70 @@ def main(argv):
          yappi.set_clock_type("wall")
          if prof: yappi.start()
         
-    if mode == "multifq":
-        if rank==0:
-            print("\nSTAR starts..")
+    #if mode == "multifq":
+    if rank==0:
+        print("\nSTAR starts..")
 
-        # Execute star -- may include sort, merge depending on mode
-        begin0 = time.time()
-        if rank == 0:
-            for r in range(nranks):
-                fn1 = os.path.join(folder, r1prefix + "_" + str(r) + ".fastq.gz")
-                fn2 = os.path.join(folder, r2prefix + "_" + str(r) + ".fastq.gz")
+    # Execute star -- may include sort, merge depending on mode
+    begin0 = time.time()
+    if rank == 0:
+        for r in range(nranks):
+            fn1 = os.path.join(folder, r1prefix + "_" + str(rank) + ".R1.fastq.gz")
+            fn2 = os.path.join(folder, r2prefix + "_" + str(rank) + ".R2.fastq.gz")
+    
+            #fn1 = os.path.join(folder, r1prefix + "_" + str(r) + ".fastq.gz")
+            #fn2 = os.path.join(folder, r2prefix + "_" + str(r) + ".fastq.gz")
 
-                if os.path.isfile(fn1) == False or os.path.isfile(fn2) == False:
-                    print(f"Error: Number of files fastq files ({r}) < number of ranks ({nranks})")
-                    print(f"!!! Fastq file(s) are not available for processing by rank {r} aborting..\n\n")
-                    #sys.exit(1)
-                    error_code = 1
-                    comm.Abort(error_code)
+            if os.path.isfile(fn1) == False or os.path.isfile(fn2) == False:
+                print(f"Error: Number of files fastq files ({r}) < number of ranks ({nranks})")
+                print(f"!!! Fastq file(s) are not available for processing by rank {r} aborting..\n\n")
+                #sys.exit(1)
+                error_code = 1
+                comm.Abort(error_code)
 
-        comm.barrier()
+    comm.barrier()
 
-        fn1 = os.path.join(folder, r1prefix + "_" + str(rank) + ".fastq.gz")
-        fn2 = os.path.join(folder, r2prefix + "_" + str(rank) + ".fastq.gz")
+    fn1 = os.path.join(folder, r1prefix + "_" + str(rank) + ".R1.fastq.gz")
+    fn2 = os.path.join(folder, r2prefix + "_" + str(rank) + ".R2.fastq.gz")
+    
+    #fn1 = os.path.join(folder, r1prefix + "_" + str(rank) + ".fastq.gz")
+    #fn2 = os.path.join(folder, r2prefix + "_" + str(rank) + ".fastq.gz")
 
-        if rank == 0:
-            print("Input files: ")
-            print(fn1)
-            print(fn2)
-        #assert os.path.isfile(fn1) == True
-        #assert os.path.isfile(fn2) == True
-        fn3, thr = sam_writer( comm, output+'/aln' )
-        begin1 = time.time()
+    if rank == 0:
+        print("Input files: ")
+        print(fn1)
+        print(fn2)
+    #assert os.path.isfile(fn1) == True
+    #assert os.path.isfile(fn2) == True
+    fn3, thr = sam_writer( comm, output+'/aln' )
+    begin1 = time.time()
 
-        if os.path.isfile(fn1) == True:
-            a=run(f'{BINDIR}/applications/STAR/bin/Linux_x86_64_static/STAR ' + 
-                  + '--soloType Droplet Droplet' +
-                  + ' --soloStrand Forward' +  
-                  + ' --runThreadN '+ cpus 
-                  + ' --genomeDir '+ reference_genome 
-                  + ' --readFilesIn ' + fn2 +' ' + fn1
-                  + ' --readFilesCommand "gunzip -c"'  
-                  + ' --soloCBwhitelist ' + whitelist 
-                  + ' --soloUMIlen 12'  
-                  + ' --soloCBlen 16' 
-                  + ' --soloFeatures GeneFull_Ex50pAS'
-                  + ' --clipAdapterType CellRanger4'
-                  + ' --outFilterScoreMin 30'
-                  + ' --soloCBmatchWLtype 1MM_multi_Nbase_pseudocounts'
-                  + ' --soloUMIdedup 1MM_Directional_UMItools'
-                  + ' --outSAMtype BAM SortedByCoordinate'
-                  + ' --outSAMattributes UB UR UY CR CB CY NH GX GN sF'
-                  + ' --soloBarcodeReadLength 0'
-                  + ' --soloCellReadStats Standard'
-                  + '  2> ' 
-                  + output +'/starlog' + str(rank) + '.txt',capture_output=True, shell=True)
-            assert a.returncode == 0
-        else:
-            print(f"{rank} No input file for me")
-        end1b=time.time()
+    if os.path.isfile(fn1) == True:
+        a=run(f'{BINDIR}/applications/STAR/bin/Linux_x86_64_static/STAR ' +  
+                + ' --runThreadN '+ cpus 
+                + ' --genomeDir '+ reference_genome 
+                + ' --readFilesIn ' + fn2 +' ' + fn1
+                + ' --readFilesCommand "gunzip -c"'  
+                + ' --soloCBwhitelist ' + whitelist 
+                +  params 
+                +  default
+                + '  2> ' 
+                + output +'/starlog' + str(rank) + '.txt',capture_output=True, shell=True)
+        assert a.returncode == 0
+    else:
+        print(f"{rank} No input file for me")
+    end1b=time.time()
 
-        thr.join()
-        comm.barrier()
-        end1=time.time()
+    thr.join()
+    comm.barrier()
+    end1=time.time()
 
-        if rank==0:
-            print("\nFASTQ to SAM time (fqprocess):",end1-begin1)
-            print("   (includes wait time:",end1 - end1b,")")
+    if rank==0:
+        print("\nFASTQ to SAM time (fqprocess):",end1-begin1)
+        print("   (includes wait time:",end1 - end1b,")")
 
-            print("\nsam to sort-bam starts")
-            begin2=time.time()
+        print("\nsam to sort-bam starts")
+        begin2=time.time()
 
     else:
         print("Incorrect mode specified!")
