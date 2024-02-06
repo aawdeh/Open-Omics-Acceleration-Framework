@@ -87,38 +87,40 @@ echo "mode: "$mode
 ## parameters
 READ1=${R1[@]}
 READ2=${R2[@]}
-READ3=${R3[@]}
-READI1=${I1[@]}
 
 echo "reads:"
 echo "READ1 $READ1"
 echo "READ2 $READ2"
-echo "READI1 $READI1"
 echo "R1PREFIX $R1PREFIX"
 echo "R3PREFIX $R3PREFIX"
 
-whitelist=""
-read_structure=""
-barcode_orientation=""
-bam_size=""
+WHITELIST=$WHITELIST
+REF=$REF
 sample_id=""
-output_format=""
-params=""
 outfile=""
-istart=""
 
-[[ -n $WHITELLIST ]] && whitelist="--whitelist $WHITELIST" && echo "Whitelist: $whitelist"
-[[ -n $READ_STRUCTURE ]] && read_structure="--read_structure $READ_STRUCTURE" && echo "Read Structure: $read_structure"
-[[ -n $BARCODE_ORIENTATION ]] && barcode_orientation="--barcode_orientation $BARCODE_ORIENTATION" && echo "Barcode Orientation: $barcode_orientation"
+## STAR Parameters that might change
+OTHER_PARAMS="--soloStrand $star_strand_mode \
+--soloUMIlen $soloUMIlen \
+--soloCBlen $soloCBlen \
+--soloFeatures $soloFeatures \
+--soloMultiMappers $soloMultiMappers"
+echo $OTHER_PARAMS
+
+## Default values
+DEFAULT_PARAMS="--soloType Droplet \
+--clipAdapterType CellRanger4 \
+--outFilterScoreMin 30 \
+--soloCBmatchWLtype 1MM_multi_Nbase_pseudocounts \
+--soloUMIdedup 1MM_Directional_UMItools \
+--outSAMtype BAM SortedByCoordinate \
+--outSAMattributes UB UR UY CR CB CY NH GX GN sF \
+--soloBarcodeReadLength 0 \
+--soloCellReadStats Standard"
+echo $DEFAULT_PARAMS
+
 [[ -n $SAMPLE_ID ]] && sample_id="--sample_id $SAMPLE_ID" && echo "sample_id: $sample_id"
-[[ -n $OUTPUT_FORMAT ]] && output_format="--output_format $OUTPUT_FORMAT" && echo "output_format: $output_format"
-[[ -n $PARAMS ]] && params="--params $PARAMS" && echo "params: $params"
 [[ -n $OUTFILE ]] && outfile="--outfile $OUTFILE" && echo "outfile: $outfile"
-if [ "$ISTART" == "True" ]
-then
-    istart="--istart"
-    echo "istart: $istart"
-fi
 
 echo "Input directory: $INDIR"
 echo "Output directory: $OUTDIR"
@@ -129,7 +131,13 @@ echo Starting run with $N ranks, $CPUS threads,$THREADS threads, $PPN ppn.
 # Todo : Make index creation parameterized.
 
 exec=dist_star.py
-mpiexec -bootstrap ssh -bind-to $BINDING -map-by $BINDING --hostfile hostfile -n $N -ppn $PPN python -u $exec --input $INDIR --output  $OUTDIR $TEMPDIR $REFDIR --index $REF --read1 $READ1 --read2 $READ2 --read3 $READ3 --cpus $CPUS --threads $THREADS --keep_unmapped ${whitelist} ${read_structure} ${barcode_orientation} ${bam_size} ${params} ${outfile} ${istart} ${sample_id} ${output_format} --r1prefix $R1PREFIX --r3prefix $R3PREFIX --mode $mode   2>&1 | tee ${OUTDIR}log.txt
+mpiexec -bootstrap ssh -bind-to $BINDING -map-by $BINDING --hostfile hostfile -n $N -ppn $PPN python -u \
+$exec --input $INDIR --output  $OUTDIR $TEMPDIR $REFDIR --index $REF --read1 $READ1 --read2 $READ2 \
+--cpus $CPUS --threads $THREADS --keep_unmapped \
+--whitelist $WHITELIST --reference_genome $REF --default $DEFAULT_PARAMS -params $OTHER_PARAMS\
+${params} ${outfile} ${istart} 
+${sample_id} ${output_format} --r1prefix $R1PREFIX --r3prefix $R3PREFIX --mode $mode   
+2>&1 | tee ${OUTDIR}log.txt
 
 
 
