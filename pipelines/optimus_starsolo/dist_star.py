@@ -439,7 +439,8 @@ def main(argv):
         for r in range(nranks):
             fn1 = os.path.join(folder, r1prefix + "_" + str(r) + ".R1.fastq.gz")
             fn2 = os.path.join(folder, r2prefix + "_" + str(r) + ".R2.fastq.gz")
-
+            print(fn1)
+            print(fn2)
             if os.path.isfile(fn1) == False or os.path.isfile(fn2) == False:
                 print(f"Error: Number of files fastq files ({r}) < number of ranks ({nranks})")
                 print(f"!!! Fastq file(s) are not available for processing by rank {r} aborting..\n\n")
