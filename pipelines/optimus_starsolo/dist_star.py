@@ -465,11 +465,12 @@ def main(argv):
     fn3, thr = sam_writer( comm, output+'/aln' )
     begin1 = time.time()
     print(os.path.join(folder, whitelist))
+    print(os.path.join(folder, reference_genome))
     if os.path.isfile(fn1) == True:
         a=run(f'./{BINDIR}/applications/STAR/bin/Linux_x86_64_static/STAR '  
                 + params1 
                 + ' --runThreadN '+ cpus
-                + ' --genomeDir '+ reference_genome 
+                + ' --genomeDir '+ os.path.join(folder, reference_genome)
                 + ' --readFilesIn ' + fn2 +' ' + fn1
                 + ' --readFilesCommand "gunzip -c"'  
                 + ' --soloCBwhitelist ' + os.path.join(folder, whitelist) + ' '
