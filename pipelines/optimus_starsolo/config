@@ -1,5 +1,5 @@
-INPUT_DIR=input_data
-OUTPUT_DIR=output
+INPUT_DIR=/home/awdeh/input_data
+OUTPUT_DIR=/home/awdeh/output
 
 ## REFERENCE and WHITELIST
 REF="genome_reference"
