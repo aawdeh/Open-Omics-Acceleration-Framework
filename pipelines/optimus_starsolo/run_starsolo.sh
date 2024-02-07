@@ -126,7 +126,7 @@ mpiexec -bootstrap ssh -bind-to $BINDING -map-by $BINDING --hostfile hostfile -n
 $exec --input $INDIR --output  $OUTDIR $TEMPDIR $REFDIR --index $REF --read1 $READ1 --read2 $READ2 \
 --cpus $CPUS --threads $THREADS --keep_unmapped \
 --whitelist $WHITELIST --reference_genome $REF --params1 "$PARAMS1" --params2 "$PARAMS2" \
-${outfile} ${istart} ${sample_id} ${output_format} --r1prefix $R1PREFIX --r2prefix $R2PREFIX \
+${outfile} ${istart} ${sample_id} ${output_format} --r1prefix $R1PREFIX --r2prefix $R2PREFIX --suffix $SUFFIX \
 2>&1 | tee ${OUTDIR}log.txt
 
 

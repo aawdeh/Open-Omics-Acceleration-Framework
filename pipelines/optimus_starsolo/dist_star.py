@@ -368,8 +368,9 @@ def main(argv):
     parser.add_argument('--temp',default="",help="Intermediate data directory")
     parser.add_argument('--read1',default="", nargs='+',help="name of r1 files (from fqprocess) seperated by spaces")
     parser.add_argument('--read2',default="", nargs='+',help="name of r2 files (from fqprocess) seperated by spaces")
-    parser.add_argument('--r1prefix',default="", help="processed R1 files for STAR")
-    parser.add_argument('--r2prefix',default="", help="processed R2 files for STAR")
+    parser.add_argument('--r1prefix',default="", help="prefix of processed R1 files for STAR")
+    parser.add_argument('--r2prefix',default="", help="prefix of processed R2 files for STAR")
+    parser.add_argument('--suffix',default="", help="suffix of processed R2 files for STAR")
     parser.add_argument('--whitelist',default="whitelist.txt",help="10x whitelist file")
     parser.add_argument('--reference_genome',default="",help="Reference genome")
     parser.add_argument('--sample_id',default="",help="sample id")
@@ -414,6 +415,8 @@ def main(argv):
     if sample_id == "": sample_id = output
     r1prefix=args["r1prefix"]  ## for mutlifq2sortedbam mode reading 'fqprocess' processed fastq files
     r2prefix=args["r2prefix"]
+    suffix=args["suffix"]
+
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
     nranks = comm.Get_size()
@@ -437,8 +440,9 @@ def main(argv):
     begin0 = time.time()
     if rank == 0:
         for r in range(nranks):
-            fn1 = os.path.join(folder, r1prefix + "_" + str(r) + ".R1.fastq.gz")
-            fn2 = os.path.join(folder, r2prefix + "_" + str(r) + ".R2.fastq.gz")
+            #fastq_R1_0.fastq.gz, fastq_R2_0.fastq.gz
+            fn1 = os.path.join(folder, r1prefix + "_" + str(r) + "." + suffix)
+            fn2 = os.path.join(folder, r2prefix + "_" + str(r) + "." + suffix)
             print(fn1)
             print(fn2)
             if os.path.isfile(fn1) == False or os.path.isfile(fn2) == False:
@@ -450,11 +454,8 @@ def main(argv):
 
     comm.barrier()
 
-    fn1 = os.path.join(folder, r1prefix + "_" + str(rank) + ".R1.fastq.gz")
-    fn2 = os.path.join(folder, r2prefix + "_" + str(rank) + ".R2.fastq.gz")
-    
-    #fn1 = os.path.join(folder, r1prefix + "_" + str(rank) + ".fastq.gz")
-    #fn2 = os.path.join(folder, r2prefix + "_" + str(rank) + ".fastq.gz")
+    fn1 = os.path.join(folder, r1prefix + "_" + str(rank) + "." + suffix)
+    fn2 = os.path.join(folder, r2prefix + "_" + str(rank) + "." + suffix)       
 
     if rank == 0:
         print("Input files: ")
