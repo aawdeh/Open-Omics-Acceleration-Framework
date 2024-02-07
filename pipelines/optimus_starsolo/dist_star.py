@@ -463,7 +463,7 @@ def main(argv):
     #assert os.path.isfile(fn2) == True
     fn3, thr = sam_writer( comm, output+'/aln' )
     begin1 = time.time()
-
+    print(folder)
     if os.path.isfile(fn1) == True:
         a=run(f'./{BINDIR}/applications/STAR/bin/Linux_x86_64_static/STAR '  
                 + params1 
@@ -471,7 +471,7 @@ def main(argv):
                 + ' --genomeDir '+ reference_genome 
                 + ' --readFilesIn ' + fn2 +' ' + fn1
                 + ' --readFilesCommand "gunzip -c"'  
-                + ' --soloCBwhitelist ' + whitelist 
+                + ' --soloCBwhitelist ' + os.path.join(folder, whitelist)
                 + params2
                 + '  2> ' 
                 + output +'/starlog' + str(rank) + '.txt',capture_output=True, shell=True)
