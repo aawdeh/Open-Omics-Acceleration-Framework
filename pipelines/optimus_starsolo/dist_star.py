@@ -467,6 +467,8 @@ def main(argv):
     begin1 = time.time()
     print(os.path.join(folder, whitelist))
     print(os.path.join(folder, reference_genome))
+    print(params1)
+    print(params2)
     if os.path.isfile(fn1) == True:
         a=run(f'./{BINDIR}/applications/STAR/bin/Linux_x86_64_static/STAR '  
                 + params1 
@@ -493,10 +495,6 @@ def main(argv):
 
         print("\nsam to sort-bam starts")
         begin2=time.time()
-
-    else:
-        print("Incorrect mode specified!")
-        os.sys.exit(1)
 
     # Finish sort, merge, convert to bam depending on mode
     cmd=""
