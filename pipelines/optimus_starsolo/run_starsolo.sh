@@ -1,10 +1,13 @@
 source config
 source miniconda3/bin/activate distbwa
 
+###########################################################
+# Get number of ranks from lscpu
+###########################################################
+
 echo "localhost" > hostfile
 num_nodes=1
 lscpu > compute_config
-
 
 num_cpus_per_node=$(cat compute_config | grep -E '^CPU\(s\)' | awk  '{print $2}')
 num_socket=$(cat compute_config | grep -E '^Socket'| awk  '{print $2}')
@@ -54,7 +57,6 @@ ppn=${ranks_per_node}
 Sockets=$(cat compute_config | grep -E '^Socket\(s\)' | awk  '{print $2}')   #2
 Cores=$(cat compute_config | grep -E '^Core\(s\)' | awk  '{print $4}')  #56
 Thread=$(cat compute_config | grep -E '^Thread' | awk  '{print $4}')  #2
-
 a=$(( $(( ${Cores}*${Thread}*${Sockets} / $ppn )) - 2*${Thread} ))   #24 (Four threads are removed for IO)
 b=$(( $(( ${Cores}*${Sockets} )) / $ppn ))   #14
 
@@ -64,15 +66,15 @@ then
     exit 0
 fi
 
-#N=$1
-#PPN=$2
 N=${total_num_ranks}
 PPN=${ranks_per_node}
 CPUS=$a
 THREADS=$a
 BINDING=socket
 
-echo "mode: "$mode
+###########################################################
+# Set parameters 
+###########################################################
 
 ## parameters
 READ1=${R1[@]}
@@ -108,8 +110,7 @@ PARAMS2="--soloUMIlen $soloUMIlen \
 --soloCellReadStats Standard \
 --soloMultiMappers $soloMultiMappers"
 echo $PARAMS2
-
-       
+     
 [[ -n $SAMPLE_ID ]] && sample_id="--sample_id $SAMPLE_ID" && echo "sample_id: $sample_id"
 [[ -n $OUTFILE ]] && outfile="--outfile $OUTFILE" && echo "outfile: $outfile"
 
@@ -120,6 +121,31 @@ mkdir -p ${OUTDIR}
 echo Starting run with $N ranks, $CPUS threads,$THREADS threads, $PPN ppn.
 # -in -sindex are required only once for indexing.
 # Todo : Make index creation parameterized.
+
+###########################################################
+# Error messages
+###########################################################
+# Check if number of ranks equals number of splits
+echo $R1; 
+echo $R2; 
+
+R1_LEN=`echo $R1 | tr ' ' '\n' | wc -l`
+R2_LEN=`echo $R2 | tr ' ' '\n' | wc -l`
+
+if [ "$N" != "$R1_LEN" ]; then
+    echo "Error: Number of ranks ("$N") does not equal number of splits ("$R1_LEN"). Program failed."
+    exit 1
+fi
+
+# Check if number of R1 and R3 fastq files is equal
+if [ "$R1_LEN" != "$R2_LEN" ]; then
+    echo "Error: Number of R1 fastq files doesnt equal number of R2 files. Program failed."
+    exit 1
+fi
+
+###########################################################
+# Call dist_star.py 
+###########################################################
 
 exec=dist_star.py
 mpiexec -bootstrap ssh -bind-to $BINDING -map-by $BINDING --hostfile hostfile -n $N -ppn $PPN python -u \
