@@ -472,7 +472,7 @@ def main(argv):
                 + params1 
                 + ' --runThreadN '+ cpus
                 + ' --genomeDir '+ os.path.join(folder, reference_genome)
-                + ' --readFilesIn ' + fn2 +' ' + fn1
+                + ' --readFilesIn ' + fn2 + ' ' + fn1
                 + ' --readFilesCommand "gunzip -c"'  
                 + ' --soloCBwhitelist ' + os.path.join(folder, whitelist) + ' '
                 + params2
@@ -553,4 +553,6 @@ def concatenate_files(input_files, output_file):
 
 
 if __name__ == "__main__":
+    print("IN MAIN")
+    print(sys.argv[1:])
     main(sys.argv[1:])
