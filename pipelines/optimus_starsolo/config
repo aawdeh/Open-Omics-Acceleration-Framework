@@ -9,8 +9,8 @@ WHITELIST="3M-febrary-2018.txt"
 # R1="10k_PBMC_Multiome_nextgem_Chromium_Controller_gex_S1_L001_R1_001.fastq.gz"
 # R2="10k_PBMC_Multiome_nextgem_Chromium_Controller_gex_S1_L001_R2_001.fastq.gz"
 # fastq_R2_0.fastq.gz
-R1="fastq_R1_0.fastq.gz"
-R2="fastq_R2_0.fastq.gz"
+R1="fastq_R1_0.fastq.gz fastq_R1_1.fastq.gz"
+R2="fastq_R2_0.fastq.gz fastq_R2_1.fastq.gz"
 
 ## Inputs for multifq STAR fastq_R1_0.fastq.gz
 R1PREFIX="fastq_R1"    ## prefix for R1 
