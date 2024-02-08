@@ -469,18 +469,19 @@ def main(argv):
     print(os.path.join(folder, reference_genome))
     print(params1)
     print(params2)
+    print(cpus)
+    
+    starcommand=params1 + " --runThreadN " + str(cpus) + " --genomeDir " + os.path.join(folder, reference_genome)+ " --readFilesIn " + fn2 + " " + fn1 + ' --readFilesCommand "gunzip -c"' + " --soloCBwhitelist " + os.path.join(folder, whitelist) + " " + params2
+    print(starcommand)
+    command = ['./' + BINDIR + '/applications/STAR/bin/Linux_x86_64_static/STAR', starcommand, f'2> {output}starlog{rank}.txt']
+    print(command)
+
     if os.path.isfile(fn1) == True:
-        a=run(f'./{BINDIR}/applications/STAR/bin/Linux_x86_64_static/STAR '  
-                + params1 
-                + ' --runThreadN '+ cpus
-                + ' --genomeDir '+ os.path.join(folder, reference_genome)
-                + ' --readFilesIn ' + fn2 + ' ' + fn1
-                + ' --readFilesCommand "gunzip -c"'  
-                + ' --soloCBwhitelist ' + os.path.join(folder, whitelist) + ' '
-                + params2
-                + '  2> ' 
-                + output +'/starlog' + str(rank) + '.txt',capture_output=True, shell=True)
-        assert a.returncode == 0
+        a=run(command, capture_output=True, shell=True)
+        if a.returncode != 0:
+            print(f"Command failed with return code {a.returncode}")
+            print("Error output:", a.stderr.decode())
+            sys.exit(1) 
     else:
         print(f"{rank} No input file for me")
     end1b=time.time()
