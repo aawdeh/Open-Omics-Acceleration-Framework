@@ -57,10 +57,8 @@ ppn=${ranks_per_node}
 Sockets=$(cat compute_config | grep -E '^Socket\(s\)' | awk  '{print $2}')   #2
 Cores=$(cat compute_config | grep -E '^Core\(s\)' | awk  '{print $4}')  #56
 Thread=$(cat compute_config | grep -E '^Thread' | awk  '{print $4}')  #2
-#a=$(( $(( ${Cores}*${Thread}*${Sockets} / $ppn )) - 2*${Thread} ))   #24 (Four threads are removed for IO)
+a=$(( $(( ${Cores}*${Thread}*${Sockets} / $ppn )) - 2*${Thread} ))   #24 (Four threads are removed for IO)
 
-# removed step for removing 4 threads for IO for STAR?
-a=$(( ${Cores}*${Thread}*${Sockets} / $ppn ))  
 b=$(( $(( ${Cores}*${Sockets} )) / $ppn ))   #14
 
 if [ $a -lt 1 ]
