@@ -461,9 +461,13 @@ def main(argv):
         print("Input files: ")
         print(fn1)
         print(fn2)
+    
     #assert os.path.isfile(fn1) == True
     #assert os.path.isfile(fn2) == True
+    # creates two threads for IO
+    # sam_writer takes piped output 
     fn3, thr = sam_writer( comm, output+'/aln' )
+
     begin1 = time.time()
     print(os.path.join(folder, whitelist))
     print(os.path.join(folder, reference_genome))
@@ -485,7 +489,7 @@ def main(argv):
     else:
         print(f"{rank} No input file for me")
     end1b=time.time()
-
+    
     thr.join()
     comm.barrier()
     end1=time.time()
