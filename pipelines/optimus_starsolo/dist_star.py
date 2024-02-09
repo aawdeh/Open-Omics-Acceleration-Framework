@@ -473,7 +473,7 @@ def main(argv):
     
     starcommand=params1 + " --runThreadN " + str(cpus) + " --genomeDir " + os.path.join(folder, reference_genome)+ " --readFilesIn " + fn2 + " " + fn1 + ' --readFilesCommand "gunzip -c"' + " --soloCBwhitelist " + os.path.join(folder, whitelist) + " " + params2
     print(starcommand)
-    command = ['./' + BINDIR + '/applications/STAR/bin/Linux_x86_64_static/STAR', starcommand, f'2> {output}/starlog{rank}.txt']
+    command = './' + BINDIR + '/applications/STAR/bin/Linux_x86_64_static/STAR ' + starcommand + " > " + output + "/starlog" + str(rank) + ".txt"
     print(command)
 
     if os.path.isfile(fn1) == True:
