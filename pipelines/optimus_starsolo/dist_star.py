@@ -479,8 +479,10 @@ def main(argv):
     
     # in bwa divide data into chunks -- compute threads 
     # putting 
-    a=run("mkdir " +  os.path.join(output, "rank" + str(rank)))
-    a=run("mkdir " +  os.path.join(output, "rank_temp" + str(rank)))
+    print("Make directory per rank")
+    subprocess.run("mkdir " +  os.path.join(output, "rank" + str(rank)), shell=True, check=True)
+    subprocess.run("mkdir " +  os.path.join(output, "rank_temp" + str(rank)), shell=True, check=True)
+
     starcommand=params1 + " --runThreadN " + str(cpus) + " --genomeDir " + os.path.join(folder, reference_genome)+ " --readFilesIn " + fn2 + " " + fn1 + ' --readFilesCommand "gunzip -c"' + " --soloCBwhitelist " + os.path.join(folder, whitelist) + " " + params2 + " --outFileNamePrefix " +  os.path.join(output, "rank" + str(rank), "test") + " --outTmpDir " +  os.path.join(output, "rank_temp" + str(rank), "temp")    
     command = './' + BINDIR + '/applications/STAR/bin/Linux_x86_64_static/STAR ' + starcommand + ' > ' + fn3 
     print(command)
