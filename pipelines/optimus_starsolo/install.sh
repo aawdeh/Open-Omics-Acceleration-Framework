@@ -31,36 +31,6 @@ echo "localhost" > hostfile
 WDIR=../../
 EXEDIR=`pwd`
 
-# compile htslib
-# cd ${WDIR}/applications/htslib
-# autoreconf -i  # Build the configure script and install files it uses
-# ./configure    # Optional but recommended, for choosing extra functionality
-# make
-#make install   #uncomment this for installation
-
-# compile samtools
-# cd ${WDIR}/applications/samtools
-# autoheader
-# autoconf -Wno-syntax
-# chmod 775 configure
-# ./configure           # Needed for choosing optional functionality
-# make
-# saminstall="SUCESS"
-# if [ -e "${WDIR}/applications/samtools/samtools" ]; then
-#     echo "SAMTools build successful"
-# else
-#     saminstall="FAILED"
-#     echo "Error!! SAMTools build failed"
-# fi
-
-# if [ "$?" == "0" ]
-# then
-#     echo "Samtools installed successfully"
-# else
-#     echo "Samtools installation failed"
-# fi
-#make install         #uncomment this for installation
-
 # compile starsolo
 echo "Build STAR" 
 cd ${WDIR}/applications
@@ -87,8 +57,9 @@ make
 make install
 cd ..
 mv samtools-1.11 samtools
+rm samtools-1.11.tar.bz2
 saminstall="SUCESS"
-if [ -e "${WDIR}/applications/samtools/samtools" ]; then
+if [ -e "samtools/samtools" ]; then
     echo "SAMTools build successful"
 else
     saminstall="FAILED"
