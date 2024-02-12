@@ -77,6 +77,7 @@ echo "EXEDIR"
 cd $EXEDIR
 pwd
 cd ${WDIR}/applications
+rm -rf samtools
 pwd
 wget https://github.com/samtools/samtools/releases/download/1.11/samtools-1.11.tar.bz2
 tar -xf samtools-1.11.tar.bz2
@@ -85,7 +86,7 @@ cd samtools-1.11
 make
 make install
 cd ..
-mv samtools-1.11/ samtools
+mv samtools-1.11 samtools
 saminstall="SUCESS"
 if [ -e "${WDIR}/applications/samtools/samtools" ]; then
     echo "SAMTools build successful"
@@ -118,5 +119,4 @@ fi
 
 echo "star compilation is "$starinstall
 echo "samtools compilation is "$saminstall
-
 echo "Compelete installation done."
