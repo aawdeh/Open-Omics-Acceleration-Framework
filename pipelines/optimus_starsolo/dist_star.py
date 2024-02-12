@@ -471,23 +471,19 @@ def main(argv):
     
     # master command comes back here 
     begin1 = time.time()
-    print(os.path.join(folder, whitelist))
-    print(os.path.join(folder, reference_genome))
-    print(params1)
-    print(params2)
-    print(cpus)
     
     # in bwa divide data into chunks -- compute threads 
-    # putting 
     print("Make directory per rank")
-    subprocess.run("mkdir " +  os.path.join(output, "rank" + str(rank)), shell=True, check=True)
-    subprocess.run("mkdir " +  os.path.join(output, "rank_temp" + str(rank)), shell=True, check=True)
+    subprocess.run("mkdir -p " +  os.path.join(output, "rank" + str(rank)), shell=True, check=True)
+    subprocess.run("mkdir -p " +  os.path.join(output, "rank_temp" + str(rank)), shell=True, check=True)
 
+    # star command
     starcommand=params1 + " --runThreadN " + str(cpus) + " --genomeDir " + os.path.join(folder, reference_genome)+ " --readFilesIn " + fn2 + " " + fn1 + ' --readFilesCommand "gunzip -c"' + " --soloCBwhitelist " + os.path.join(folder, whitelist) + " " + params2 + " --outFileNamePrefix " +  os.path.join(output, "rank" + str(rank), "test") + " --outTmpDir " +  os.path.join(output, "rank_temp" + str(rank), "temp")    
     command = './' + BINDIR + '/applications/STAR/bin/Linux_x86_64_static/STAR ' + starcommand + ' > ' + fn3 
     print(command)
-
+    
     if os.path.isfile(fn1) == True:
+        print("Run STAR per rank")
         a=run(command, capture_output=True, shell=True)
         if a.returncode != 0:
             print(f"Command failed with return code {a.returncode}")
@@ -523,7 +519,6 @@ def main(argv):
     if rank==0:
         end2=time.time()
         print("SAM to sort-BAM time:",end2-begin2)
-
 
     ## concat bams
     if rank == 0:
@@ -568,6 +563,4 @@ def concatenate_files(input_files, output_file):
 
 
 if __name__ == "__main__":
-    print("IN MAIN")
-    print(sys.argv[1:])
     main(sys.argv[1:])
