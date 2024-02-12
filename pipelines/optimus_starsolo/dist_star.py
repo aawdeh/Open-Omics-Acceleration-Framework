@@ -544,6 +544,10 @@ def main(argv):
         cmd+=f'{BINDIR}/applications/samtools/samtools cat -o ' + os.path.join(output, outfile) + '.sorted.bam ' + infstr
         #print("merge cmd: ", cmd, flush=True)
         a=run(cmd,capture_output=True,shell=True)
+        if a.returncode != 0:
+            print(f"Command failed with return code {a.returncode}")
+            print("Error output:", a.stderr.decode())
+            sys.exit(1) 
         assert a.returncode == 0
         print("Concat done.\nTime for cat: ", time.time() - tic)
 
