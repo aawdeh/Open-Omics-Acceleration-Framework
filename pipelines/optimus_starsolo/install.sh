@@ -52,25 +52,31 @@ make
 
 # compile samtools
 cd ${WDIR}/applications/samtools
-autoheader
-autoconf -Wno-syntax
-chmod 775 configure
-./configure           # Needed for choosing optional functionality
+wget https://github.com/samtools/samtools/releases/download/1.11/samtools-1.11.tar.bz2
+tar -xf samtools-1.11.tar.bz2
+cd samtools-1.11
+./configure
 make
-saminstall="SUCESS"
-if [ -e "${WDIR}/applications/samtools/samtools" ]; then
-    echo "SAMTools build successful"
-else
-    saminstall="FAILED"
-    echo "Error!! SAMTools build failed"
-fi
+make install
+# autoheader
+# autoconf -Wno-syntax
+# chmod 775 configure
+# ./configure           # Needed for choosing optional functionality
+# make
+# saminstall="SUCESS"
+# if [ -e "${WDIR}/applications/samtools/samtools" ]; then
+#     echo "SAMTools build successful"
+# else
+#     saminstall="FAILED"
+#     echo "Error!! SAMTools build failed"
+# fi
 
-if [ "$?" == "0" ]
-then
-    echo "Samtools installed successfully"
-else
-    echo "Samtools installation failed"
-fi
+# if [ "$?" == "0" ]
+# then
+#     echo "Samtools installed successfully"
+# else
+#     echo "Samtools installation failed"
+# fi
 #make install         #uncomment this for installation
 
 cd $EXEDIR
