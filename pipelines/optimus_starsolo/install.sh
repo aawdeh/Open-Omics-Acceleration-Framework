@@ -31,12 +31,40 @@ echo "localhost" > hostfile
 WDIR=../../
 EXEDIR=`pwd`
 
+# compile htslib
+# cd ${WDIR}/applications/htslib
+# autoreconf -i  # Build the configure script and install files it uses
+# ./configure    # Optional but recommended, for choosing extra functionality
+# make
+#make install   #uncomment this for installation
+
+# compile samtools
+# cd ${WDIR}/applications/samtools
+# autoheader
+# autoconf -Wno-syntax
+# chmod 775 configure
+# ./configure           # Needed for choosing optional functionality
+# make
+# saminstall="SUCESS"
+# if [ -e "${WDIR}/applications/samtools/samtools" ]; then
+#     echo "SAMTools build successful"
+# else
+#     saminstall="FAILED"
+#     echo "Error!! SAMTools build failed"
+# fi
+
+# if [ "$?" == "0" ]
+# then
+#     echo "Samtools installed successfully"
+# else
+#     echo "Samtools installation failed"
+# fi
+#make install         #uncomment this for installation
+
 # compile starsolo
 echo "Build STAR" 
 cd ${WDIR}/applications
 wget https://github.com/alexdobin/STAR/archive/refs/tags/2.7.11a.tar.gz
-pwd
-ls
 tar -xvf 2.7.11a.tar.gz
 rm 2.7.11a.tar.gz
 mv STAR-2.7.11a/ STAR
@@ -74,27 +102,7 @@ autoreconf -i  # Build the configure script and install files it uses
 ./configure    # Optional but recommended, for choosing extra functionality
 make
 
-# autoheader
-# autoconf -Wno-syntax
-# chmod 775 configure
-# ./configure           # Needed for choosing optional functionality
-# make
-# saminstall="SUCESS"
-# if [ -e "${WDIR}/applications/samtools/samtools" ]; then
-#     echo "SAMTools build successful"
-# else
-#     saminstall="FAILED"
-#     echo "Error!! SAMTools build failed"
-# fi
-
-# if [ "$?" == "0" ]
-# then
-#     echo "Samtools installed successfully"
-# else
-#     echo "Samtools installation failed"
-# fi
-#make install         #uncomment this for installation
-
+# fastqprocess
 cd $EXEDIR
 git clone --recursive https://github.com/broadinstitute/warp-tools.git -b develop
 cd warp-tools/tools/fastqpreprocessing/
