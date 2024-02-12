@@ -464,10 +464,12 @@ def main(argv):
     
     #assert os.path.isfile(fn1) == True
     #assert os.path.isfile(fn2) == True
-    # creates two threads for IO
+    # creates two child threads for IO/communication for sender and reciever
+    # sender keeps waiting 
     # sam_writer takes piped output 
     fn3, thr = sam_writer( comm, output+'/aln' )
-
+    
+    # master command comes back here 
     begin1 = time.time()
     print(os.path.join(folder, whitelist))
     print(os.path.join(folder, reference_genome))
@@ -475,9 +477,12 @@ def main(argv):
     print(params2)
     print(cpus)
     
-    starcommand=params1 + " --runThreadN " + str(cpus) + " --genomeDir " + os.path.join(folder, reference_genome)+ " --readFilesIn " + fn2 + " " + fn1 + ' --readFilesCommand "gunzip -c"' + " --soloCBwhitelist " + os.path.join(folder, whitelist) + " " + params2
-    print(starcommand)
-    command = './' + BINDIR + '/applications/STAR/bin/Linux_x86_64_static/STAR ' + starcommand + " > " + output + "/starlog" + str(rank) + ".txt"
+    # in bwa divide data into chunks -- compute threads 
+    # putting 
+    a=run("mkdir " +  os.path.join(output, "rank" + str(rank)))
+    a=run("mkdir " +  os.path.join(output, "rank_temp" + str(rank)))
+    starcommand=params1 + " --runThreadN " + str(cpus) + " --genomeDir " + os.path.join(folder, reference_genome)+ " --readFilesIn " + fn2 + " " + fn1 + ' --readFilesCommand "gunzip -c"' + " --soloCBwhitelist " + os.path.join(folder, whitelist) + " " + params2 + " --outFileNamePrefix " +  os.path.join(output, "rank" + str(rank), "test") + " --outTmpDir " +  os.path.join(output, "rank_temp" + str(rank), "temp")    
+    command = './' + BINDIR + '/applications/STAR/bin/Linux_x86_64_static/STAR ' + starcommand + ' > ' + fn3 
     print(command)
 
     if os.path.isfile(fn1) == True:
@@ -490,6 +495,7 @@ def main(argv):
         print(f"{rank} No input file for me")
     end1b=time.time()
     
+    # all threads merging into master 
     thr.join()
     comm.barrier()
     end1=time.time()

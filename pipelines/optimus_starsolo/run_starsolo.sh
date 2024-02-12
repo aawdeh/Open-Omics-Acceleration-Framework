@@ -105,12 +105,14 @@ PARAMS2="--soloUMIlen $soloUMIlen \
 --outFilterScoreMin 30 \
 --soloCBmatchWLtype 1MM_multi_Nbase_pseudocounts \
 --soloUMIdedup 1MM_Directional_UMItools \
---outSAMtype BAM SortedByCoordinate \
---outSAMattributes UB UR UY CR CB CY NH GX GN sF \
+--outSAMtype SAM \
 --soloBarcodeReadLength 0 \
 --soloCellReadStats Standard \
---soloMultiMappers $soloMultiMappers"
+--soloMultiMappers $soloMultiMappers \
+--outStd SAM" \
+
 echo $PARAMS2
+## --outSAMattributes UB UR UY CR CB CY NH GX GN sF \
      
 [[ -n $SAMPLE_ID ]] && sample_id="--sample_id $SAMPLE_ID" && echo "sample_id: $sample_id"
 [[ -n $OUTFILE ]] && outfile="--outfile $OUTFILE" && echo "outfile: $outfile"
