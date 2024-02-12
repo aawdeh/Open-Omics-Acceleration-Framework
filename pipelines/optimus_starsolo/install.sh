@@ -51,7 +51,7 @@ make
 #make install   #uncomment this for installation
 
 # compile samtools
-cd ${WDIR}/applications/samtools
+cd ${WDIR}/applications
 wget https://github.com/samtools/samtools/releases/download/1.11/samtools-1.11.tar.bz2
 tar -xf samtools-1.11.tar.bz2
 cd samtools-1.11
