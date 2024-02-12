@@ -43,21 +43,37 @@ mv STAR-2.7.11a/ STAR
 cd STAR/bin/Linux_x86_64_static
 chmod +x ./STAR
 
-# compile htslib
-cd ${WDIR}/applications/htslib
-autoreconf -i  # Build the configure script and install files it uses
-./configure    # Optional but recommended, for choosing extra functionality
-make
-#make install   #uncomment this for installation
-
 # compile samtools
+echo "Build SAMTOOLS"
+echo "EXEDIR"
+cd $EXEDIR
+pwd
 cd ${WDIR}/applications
+pwd
 wget https://github.com/samtools/samtools/releases/download/1.11/samtools-1.11.tar.bz2
 tar -xf samtools-1.11.tar.bz2
 cd samtools-1.11
 ./configure
 make
 make install
+cd ..
+mv samtools-1.11/ samtools
+saminstall="SUCESS"
+if [ -e "${WDIR}/applications/samtools/samtools" ]; then
+    echo "SAMTools build successful"
+else
+    saminstall="FAILED"
+    echo "Error!! SAMTools build failed"
+fi
+
+# compile htslib
+echo "EXEDIR"
+cd $EXEDIR
+cd ${WDIR}/applications/htslib
+autoreconf -i  # Build the configure script and install files it uses
+./configure    # Optional but recommended, for choosing extra functionality
+make
+
 # autoheader
 # autoconf -Wno-syntax
 # chmod 775 configure
@@ -80,7 +96,6 @@ make install
 #make install         #uncomment this for installation
 
 cd $EXEDIR
-
 git clone --recursive https://github.com/broadinstitute/warp-tools.git -b develop
 cd warp-tools/tools/fastqpreprocessing/
 ./fetch_and_make_dep_libs.sh && make
@@ -93,7 +108,7 @@ else
     echo "fqprocess installation failed"
 fi
 
-echo "bwa compilation is "$bwainstall
+echo "star compilation is "$starinstall
 echo "samtools compilation is "$saminstall
 
 echo "Compelete installation done."
