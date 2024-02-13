@@ -105,11 +105,12 @@ PARAMS2="--soloUMIlen $soloUMIlen \
 --outFilterScoreMin 30 \
 --soloCBmatchWLtype 1MM_multi_Nbase_pseudocounts \
 --soloUMIdedup 1MM_Directional_UMItools \
---outSAMtype SAM \
+--outSAMtype BAM SortedByCoordinate \
+--outSAMattributes UB UR UY CR CB CY NH GX GN sF \
 --soloBarcodeReadLength 0 \
 --soloCellReadStats Standard \
 --soloMultiMappers $soloMultiMappers \
---outStd SAM" \
+--outStd BAM" \
 
 echo $PARAMS2
 ## --outSAMattributes UB UR UY CR CB CY NH GX GN sF \
