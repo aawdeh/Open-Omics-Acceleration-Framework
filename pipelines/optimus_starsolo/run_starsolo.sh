@@ -110,7 +110,7 @@ PARAMS2="--soloUMIlen $soloUMIlen \
 --soloBarcodeReadLength 0 \
 --soloCellReadStats Standard \
 --soloMultiMappers $soloMultiMappers \
---outStd BAM" \
+--outStd BAM_SortedByCoordinate" \
 
 echo $PARAMS2
 ## --outSAMattributes UB UR UY CR CB CY NH GX GN sF \
