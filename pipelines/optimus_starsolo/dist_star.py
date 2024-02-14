@@ -533,7 +533,7 @@ def main(argv):
         for b in range(bins_per_rank):
             for r in range(nranks):
                 binstr = '%05d'%(nranks*b + r)
-                bf.append(os.path.join(output, "rank" + str(rank), "testAligned.sortedByCoord.out.bam"))
+                bf.append(os.path.join(output, "rank" + str(r), "testAligned.sortedByCoord.out.bam"))
         
         print(bf)
         infstr = bf[0]
