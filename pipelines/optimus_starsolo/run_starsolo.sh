@@ -27,8 +27,16 @@ echo "Num physical cores per nodes: "$num_physical_cores_per_nodes
 echo "Num physical cores per socket: "$num_physical_cores_per_socket
 echo "Num physical cores per numa: "$num_physical_cores_per_numa
 
-th=`expr ${num_physical_cores_per_numa} / 2`  #${num_physical_cores_per_numa}  ##20
-if [ $th -le 10 ]
+# 4 ranks: number of cores per rank is 32/2 which 16 -- 2 ranks per socket
+# 6 ranks: number of cores per rank is floor(32/3) which  -- 3 ranks per socket -- using 30 cores not 32 with the floor
+# -- 32/3 doesnt divide evenly 1 rank having more cores than another
+# 8 ranks: number of cores per rank is 32/4 which 8 -- 4 ranks per socket? 
+# 3 ranks per socket
+#*
+th=`expr ${num_physical_cores_per_numa} / 4` 
+
+# we want at least 10 cores per rank here -- change to 5 
+if [ $th -le 5 ]
 then
     th=${num_physical_cores_per_numa}
 fi
@@ -110,7 +118,6 @@ PARAMS2="--soloUMIlen $soloUMIlen \
 --soloBarcodeReadLength 0 \
 --soloCellReadStats Standard \
 --soloMultiMappers $soloMultiMappers"
-## --outStd BAM_SortedByCoordinate" \
 
 echo $PARAMS2
      

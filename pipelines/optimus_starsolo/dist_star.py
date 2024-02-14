@@ -499,37 +499,21 @@ def main(argv):
     end1=time.time()
 
     if rank==0:
-        print("\nFASTQ to SAM time (fqprocess):",end1-begin1)
+        print("\nFASTQ to BAM time (fqprocess):",end1-begin1)
         print("   (includes wait time:",end1 - end1b,")")
 
-        print("\nsam to sort-bam starts")
+        print("\nSorted bams to merging bams starts")
         begin2=time.time()
 
-    # Finish sort, merge, convert to bam depending on mode
-    # cmd=""
-    # for i in range(bins_per_rank):
-    #     binstr = '%05d'%(nranks*i+rank)
-    #     cmd+=f'{BINDIR}/applications/samtools/samtools sort --threads '+threads+' -T '+tempdir+'/aln'+binstr+'.sorted -o '+ output +'/aln'+binstr+'.bam '+ output+'/aln'+binstr+'.sam;'
-    #     if i%20==0:
-    #         a=run(cmd,capture_output=True,shell=True)
-    #         cmd=""
-    # if not cmd=="": a=run(cmd,capture_output=True,shell=True)
-    # comm.barrier()
-
-    # if rank==0:
-    #     end2=time.time()
-    #     print("SAM to sort-BAM time:",end2-begin2)
-
-    ## concat bams
     print(read1)
     if len(read1) == 1:
-        subprocess.run("mv " +  os.path.join(output, "rank" + str(rank), "testAligned.sortedByCoord.out.bam") 
+        subprocess.run("mv " + os.path.join(output, "rank" + str(rank), "testAligned.sortedByCoord.out.bam") 
                        + " " + os.path.join(output, "final.sorted.bam"), shell=True, check=True)
 
     if (rank == 0) and (len(read1) > 1):
         tic = time.time()
         bf = []
-        print('Concating the bam files...')
+        print('Merging the sorted bam files...')
         for b in range(bins_per_rank):
             for r in range(nranks):
                 binstr = '%05d'%(nranks*b + r)
@@ -542,18 +526,25 @@ def main(argv):
         if outfile == None:
             outfile = "final"
 
-        # why is there +=?
-        #samtools merge -o ~{bam_aligned_output_name} bam_aligned_output_p1.bam bam_aligned_output_p2.bam -@15 
         print(infstr)
-        cmd = f'{BINDIR}/applications/samtools/samtools merge ' + os.path.join(output, outfile) + '.sorted.bam ' + infstr + ' -@' + threads
-        #print("merge cmd: ", cmd, flush=True)
-        a=run(cmd,capture_output=True,shell=True)
+        cmd = f'{BINDIR}/applications/samtools/samtools merge ' + os.path.join(output, outfile) + '.sorted.bam ' + infstr + ' -@12 -m 3G'
+        a = run(cmd, capture_output=True,shell=True)
         if a.returncode != 0:
             print(f"Command failed with return code {a.returncode}")
             print("Error output:", a.stderr.decode())
             sys.exit(1) 
         assert a.returncode == 0
-        print("Concat done.\nTime for cat: ", time.time() - tic)
+        print("Merge done.\nTime taken to merge: ", time.time() - tic)
+        
+        print("Remove partial files.")
+        a = run("rm " + infstr, capture_output=True,shell=True)
+        if a.returncode != 0:
+            print(f"Command failed with return code {a.returncode}")
+            print("Error output:", a.stderr.decode())
+            sys.exit(1) 
+        assert a.returncode == 0
+        print("Remove partial files done.")
+     
 
 if __name__ == "__main__":
     main(sys.argv[1:])
