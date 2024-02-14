@@ -521,7 +521,8 @@ def main(argv):
     #     print("SAM to sort-BAM time:",end2-begin2)
 
     ## concat bams
-    if rank == 0:
+    print(read1)
+    if (rank == 0) and (len(read1) > 1):
         tic = time.time()
         bf = []
         print('Concating the bam files...')
@@ -529,7 +530,6 @@ def main(argv):
             for r in range(nranks):
                 binstr = '%05d'%(nranks*b + r)
                 bf.append(os.path.join(output, "rank" + str(rank), "testAligned.sortedByCoord.out.bam"))
-                #bf.append(output+'/Test'+binstr+'.bam')
         
         print(bf)
         infstr = bf[0]
@@ -548,21 +548,6 @@ def main(argv):
             sys.exit(1) 
         assert a.returncode == 0
         print("Concat done.\nTime for cat: ", time.time() - tic)
-
-
-def concatenate_files(input_files, output_file):
-    try:
-        with open(output_file, 'wb') as output:
-            for input_file in input_files:
-                with open(input_file, 'rb') as file:
-                    data = file.read()
-                    output.write(data)
-                # Optionally, you can insert a separator (e.g., newline) between files.
-                output.write(b'\n')  # Add a newline between concatenated files
-
-        print(f"Concatenated {len(input_files)} files into '{output_file}'.")
-    except Exception as e:
-        print(f"An error occurred: {e}")
 
 if __name__ == "__main__":
     main(sys.argv[1:])
