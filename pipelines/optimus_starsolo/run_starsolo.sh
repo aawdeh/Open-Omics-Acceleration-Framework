@@ -109,11 +109,10 @@ PARAMS2="--soloUMIlen $soloUMIlen \
 --outSAMattributes UB UR UY CR CB CY NH GX GN sF \
 --soloBarcodeReadLength 0 \
 --soloCellReadStats Standard \
---soloMultiMappers $soloMultiMappers \
---outStd BAM_SortedByCoordinate" \
+--soloMultiMappers $soloMultiMappers"
+## --outStd BAM_SortedByCoordinate" \
 
 echo $PARAMS2
-## --outSAMattributes UB UR UY CR CB CY NH GX GN sF \
      
 [[ -n $SAMPLE_ID ]] && sample_id="--sample_id $SAMPLE_ID" && echo "sample_id: $sample_id"
 [[ -n $OUTFILE ]] && outfile="--outfile $OUTFILE" && echo "outfile: $outfile"

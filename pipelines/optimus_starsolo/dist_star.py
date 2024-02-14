@@ -467,7 +467,7 @@ def main(argv):
     # creates two child threads for IO/communication for sender and reciever
     # sender keeps waiting 
     # sam_writer takes piped output 
-    fn3, thr = sam_writer( comm, output+'/aln' )
+    # fn3, thr = sam_writer( comm, output+'/aln' )
     
     # master command comes back here 
     begin1 = time.time()
@@ -478,8 +478,8 @@ def main(argv):
     subprocess.run("mkdir -p " +  os.path.join(output, "rank_temp" + str(rank)), shell=True, check=True)
 
     # star command
-    starcommand=params1 + " --runThreadN " + str(cpus) + " --genomeDir " + os.path.join(folder, reference_genome)+ " --readFilesIn " + fn2 + " " + fn1 + ' --readFilesCommand "gunzip -c"' + " --soloCBwhitelist " + os.path.join(folder, whitelist) + " " + params2 + " --outFileNamePrefix " +  os.path.join(output, "rank" + str(rank), "test") + " --outTmpDir " +  os.path.join(output, "rank_temp" + str(rank), "temp")    
-    command = './' + BINDIR + '/applications/STAR/bin/Linux_x86_64_static/STAR ' + starcommand + ' > ' + fn3 
+    starcommand = params1 + " --runThreadN " + str(cpus) + " --genomeDir " + os.path.join(folder, reference_genome)+ " --readFilesIn " + fn2 + " " + fn1 + ' --readFilesCommand "gunzip -c"' + " --soloCBwhitelist " + os.path.join(folder, whitelist) + " " + params2 + " --outFileNamePrefix " +  os.path.join(output, "rank" + str(rank), "test") + " --outTmpDir " +  os.path.join(output, "rank_temp" + str(rank), "temp")    
+    command = './' + BINDIR + '/applications/STAR/bin/Linux_x86_64_static/STAR ' + starcommand
     print(command)
     
     if os.path.isfile(fn1) == True:
@@ -494,7 +494,7 @@ def main(argv):
     end1b=time.time()
     
     # all threads merging into master 
-    thr.join()
+    # thr.join()
     comm.barrier()
     end1=time.time()
 
@@ -506,19 +506,19 @@ def main(argv):
         begin2=time.time()
 
     # Finish sort, merge, convert to bam depending on mode
-    cmd=""
-    for i in range(bins_per_rank):
-        binstr = '%05d'%(nranks*i+rank)
-        cmd+=f'{BINDIR}/applications/samtools/samtools sort --threads '+threads+' -T '+tempdir+'/aln'+binstr+'.sorted -o '+ output +'/aln'+binstr+'.bam '+ output+'/aln'+binstr+'.sam;'
-        if i%20==0:
-            a=run(cmd,capture_output=True,shell=True)
-            cmd=""
-    if not cmd=="": a=run(cmd,capture_output=True,shell=True)
-    comm.barrier()
+    # cmd=""
+    # for i in range(bins_per_rank):
+    #     binstr = '%05d'%(nranks*i+rank)
+    #     cmd+=f'{BINDIR}/applications/samtools/samtools sort --threads '+threads+' -T '+tempdir+'/aln'+binstr+'.sorted -o '+ output +'/aln'+binstr+'.bam '+ output+'/aln'+binstr+'.sam;'
+    #     if i%20==0:
+    #         a=run(cmd,capture_output=True,shell=True)
+    #         cmd=""
+    # if not cmd=="": a=run(cmd,capture_output=True,shell=True)
+    # comm.barrier()
 
-    if rank==0:
-        end2=time.time()
-        print("SAM to sort-BAM time:",end2-begin2)
+    # if rank==0:
+    #     end2=time.time()
+    #     print("SAM to sort-BAM time:",end2-begin2)
 
     ## concat bams
     if rank == 0:
@@ -528,7 +528,10 @@ def main(argv):
         for b in range(bins_per_rank):
             for r in range(nranks):
                 binstr = '%05d'%(nranks*b + r)
-                bf.append(output+'/aln'+binstr+'.bam')
+                bf.append(os.path.join(output, "rank" + str(rank), "testAligned.sortedByCoord.out.bam"))
+                #bf.append(output+'/Test'+binstr+'.bam')
+
+
 
         infstr = bf[0]
         for i in range(1, len(bf)):
@@ -536,7 +539,7 @@ def main(argv):
         if outfile == None:
             outfile = "final"
 
-        cmd+=f'{BINDIR}/applications/samtools/samtools cat -o ' + os.path.join(output, outfile) + '.sorted.bam ' + infstr
+        cmd+=f'{BINDIR}/applications/samtools/samtools merge -o ' + os.path.join(output, outfile) + '.sorted.bam ' + infstr
         #print("merge cmd: ", cmd, flush=True)
         a=run(cmd,capture_output=True,shell=True)
         if a.returncode != 0:
@@ -560,7 +563,6 @@ def concatenate_files(input_files, output_file):
         print(f"Concatenated {len(input_files)} files into '{output_file}'.")
     except Exception as e:
         print(f"An error occurred: {e}")
-
 
 if __name__ == "__main__":
     main(sys.argv[1:])
