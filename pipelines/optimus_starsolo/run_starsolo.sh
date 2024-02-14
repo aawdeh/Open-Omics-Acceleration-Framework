@@ -139,19 +139,19 @@ echo Starting run with $N ranks, $CPUS threads,$THREADS threads, $PPN ppn.
 echo $R1; 
 echo $R2; 
 
-R1_LEN=`echo $R1 | tr ' ' '\n' | wc -l`
-R2_LEN=`echo $R2 | tr ' ' '\n' | wc -l`
+# R1_LEN=`echo $R1 | tr ' ' '\n' | wc -l`
+# R2_LEN=`echo $R2 | tr ' ' '\n' | wc -l`
 
-if [ "$N" != "$R1_LEN" ]; then
-    echo "Error: Number of ranks ("$N") does not equal number of splits ("$R1_LEN"). Program failed."
-    exit 1
-fi
+# if [ "$N" != "$R1_LEN" ]; then
+#     echo "Error: Number of ranks ("$N") does not equal number of splits ("$R1_LEN"). Program failed."
+#     exit 1
+# fi
 
-# Check if number of R1 and R3 fastq files is equal
-if [ "$R1_LEN" != "$R2_LEN" ]; then
-    echo "Error: Number of R1 fastq files doesnt equal number of R2 files. Program failed."
-    exit 1
-fi
+# # Check if number of R1 and R3 fastq files is equal
+# if [ "$R1_LEN" != "$R2_LEN" ]; then
+#     echo "Error: Number of R1 fastq files doesnt equal number of R2 files. Program failed."
+#     exit 1
+# fi
 
 ###########################################################
 # Call dist_star.py 
