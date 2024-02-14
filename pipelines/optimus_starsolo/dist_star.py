@@ -524,7 +524,7 @@ def main(argv):
             outfile = "final"
 
         print(infstr)
-        cmd = f'{BINDIR}/applications/samtools/samtools merge ' + os.path.join(output, outfile) + '.sorted.bam ' + infstr + ' -@12 -m 3G'
+        cmd = f'{BINDIR}/applications/samtools/samtools merge ' + os.path.join(output, outfile) + '.sorted.bam ' + infstr + ' -@' + threads
         a = run(cmd, capture_output=True,shell=True)
         if a.returncode != 0:
             print(f"Command failed with return code {a.returncode}")
