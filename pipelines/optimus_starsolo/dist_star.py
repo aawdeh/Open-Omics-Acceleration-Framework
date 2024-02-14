@@ -522,11 +522,12 @@ def main(argv):
 
     ## concat bams
     print(read1)
-    if len(read1) == 1:
-        subprocess.run("mv " +  os.path.join(output, "rank" + str(rank), "testAligned.sortedByCoord.out.bam") 
-                       + " " + os.path.join(output, "final.sorted.bam"), shell=True, check=True)
+    # if len(read1) == 1:
+    #     subprocess.run("mv " +  os.path.join(output, "rank" + str(rank), "testAligned.sortedByCoord.out.bam") 
+    #                    + " " + os.path.join(output, "final.sorted.bam"), shell=True, check=True)
 
-    if (rank == 0) and (len(read1) > 1):
+    #if (rank == 0) and (len(read1) > 1):
+    if (rank == 0):
         tic = time.time()
         bf = []
         print('Concating the bam files...')
