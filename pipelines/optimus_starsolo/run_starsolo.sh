@@ -33,10 +33,10 @@ echo "Num physical cores per numa: "$num_physical_cores_per_numa
 # 8 ranks: number of cores per rank is 32/4 which 8 -- 4 ranks per socket? 
 # 3 ranks per socket
 #*
-th=`expr ${num_physical_cores_per_numa} / 2` 
+th=`expr ${num_physical_cores_per_numa} / 4` 
 
 # we want at least 10 cores per rank here -- change to 5 
-if [ $th -le 10 ]
+if [ $th -le 5 ]
 then
     th=${num_physical_cores_per_numa}
 fi
@@ -139,19 +139,19 @@ echo Starting run with $N ranks, $CPUS threads,$THREADS threads, $PPN ppn.
 echo $R1; 
 echo $R2; 
 
-R1_LEN=`echo $R1 | tr ' ' '\n' | wc -l`
-R2_LEN=`echo $R2 | tr ' ' '\n' | wc -l`
+# R1_LEN=`echo $R1 | tr ' ' '\n' | wc -l`
+# R2_LEN=`echo $R2 | tr ' ' '\n' | wc -l`
 
-if [ "$N" != "$R1_LEN" ]; then
-    echo "Error: Number of ranks ("$N") does not equal number of splits ("$R1_LEN"). Program failed."
-    exit 1
-fi
+# if [ "$N" != "$R1_LEN" ]; then
+#     echo "Error: Number of ranks ("$N") does not equal number of splits ("$R1_LEN"). Program failed."
+#     exit 1
+# fi
 
-# Check if number of R1 and R3 fastq files is equal
-if [ "$R1_LEN" != "$R2_LEN" ]; then
-    echo "Error: Number of R1 fastq files doesnt equal number of R2 files. Program failed."
-    exit 1
-fi
+# # Check if number of R1 and R3 fastq files is equal
+# if [ "$R1_LEN" != "$R2_LEN" ]; then
+#     echo "Error: Number of R1 fastq files doesnt equal number of R2 files. Program failed."
+#     exit 1
+# fi
 
 ###########################################################
 # Call dist_star.py 
