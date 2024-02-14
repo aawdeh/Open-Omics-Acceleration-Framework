@@ -432,7 +432,6 @@ def main(argv):
          yappi.set_clock_type("wall")
          if prof: yappi.start()
         
-    #if mode == "multifq":
     if rank==0:
         print("\nSTAR starts..")
 
@@ -462,8 +461,6 @@ def main(argv):
         print(fn1)
         print(fn2)
     
-    #assert os.path.isfile(fn1) == True
-    #assert os.path.isfile(fn2) == True
     # creates two child threads for IO/communication for sender and reciever
     # sender keeps waiting 
     # sam_writer takes piped output 
