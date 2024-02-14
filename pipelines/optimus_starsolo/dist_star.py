@@ -530,16 +530,16 @@ def main(argv):
                 binstr = '%05d'%(nranks*b + r)
                 bf.append(os.path.join(output, "rank" + str(rank), "testAligned.sortedByCoord.out.bam"))
                 #bf.append(output+'/Test'+binstr+'.bam')
-
-
-
+        
+        print(bf)
         infstr = bf[0]
         for i in range(1, len(bf)):
             infstr = infstr + " " + bf[i]
         if outfile == None:
             outfile = "final"
 
-        cmd+=f'{BINDIR}/applications/samtools/samtools merge -o ' + os.path.join(output, outfile) + '.sorted.bam ' + infstr
+        # why is there +=?
+        cmd = f'{BINDIR}/applications/samtools/samtools merge -o ' + os.path.join(output, outfile) + '.sorted.bam ' + infstr
         #print("merge cmd: ", cmd, flush=True)
         a=run(cmd,capture_output=True,shell=True)
         if a.returncode != 0:
