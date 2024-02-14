@@ -543,7 +543,9 @@ def main(argv):
             outfile = "final"
 
         # why is there +=?
-        cmd = f'{BINDIR}/applications/samtools/samtools merge --threads ' + threads + '-o ' + os.path.join(output, outfile) + '.sorted.bam ' + infstr
+        #samtools merge -o ~{bam_aligned_output_name} bam_aligned_output_p1.bam bam_aligned_output_p2.bam -@15 
+        print(infstr)
+        cmd = f'{BINDIR}/applications/samtools/samtools merge ' + os.path.join(output, outfile) + '.sorted.bam ' + infstr + '-@' + threads
         #print("merge cmd: ", cmd, flush=True)
         a=run(cmd,capture_output=True,shell=True)
         if a.returncode != 0:
