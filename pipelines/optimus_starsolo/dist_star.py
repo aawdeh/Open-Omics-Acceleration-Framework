@@ -522,12 +522,11 @@ def main(argv):
 
     ## concat bams
     print(read1)
-    # if len(read1) == 1:
-    #     subprocess.run("mv " +  os.path.join(output, "rank" + str(rank), "testAligned.sortedByCoord.out.bam") 
-    #                    + " " + os.path.join(output, "final.sorted.bam"), shell=True, check=True)
+    if len(read1) == 1:
+        subprocess.run("mv " +  os.path.join(output, "rank" + str(rank), "testAligned.sortedByCoord.out.bam") 
+                       + " " + os.path.join(output, "final.sorted.bam"), shell=True, check=True)
 
-    #if (rank == 0) and (len(read1) > 1):
-    if (rank == 0):
+    if (rank == 0) and (len(read1) > 1):
         tic = time.time()
         bf = []
         print('Concating the bam files...')
@@ -544,7 +543,7 @@ def main(argv):
             outfile = "final"
 
         # why is there +=?
-        cmd = f'{BINDIR}/applications/samtools/samtools merge -o ' + os.path.join(output, outfile) + '.sorted.bam ' + infstr
+        cmd = f'{BINDIR}/applications/samtools/samtools merge --threads ' + threads + '-o ' + os.path.join(output, outfile) + '.sorted.bam ' + infstr
         #print("merge cmd: ", cmd, flush=True)
         a=run(cmd,capture_output=True,shell=True)
         if a.returncode != 0:
